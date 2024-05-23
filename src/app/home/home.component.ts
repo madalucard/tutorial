@@ -14,7 +14,7 @@ export class HomeComponent {
 
   ngOnInit() {
     this.productService
-      .getProducts('http://localhost:3000', { page: 1, perPage: 5 })
+      .getProducts('http://localhost:3000/clothes', { page: 1, perPage: 5 })
       .subscribe((products: Products) => {
         console.log(products.items);
       });
