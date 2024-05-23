@@ -4,14 +4,12 @@ import { Observable } from 'rxjs';
 import { Options } from '../../types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
+  constructor(private httpClient: HttpClient) {}
 
-  constructor(
-    private httpClient: HttpClient
-  ) { }
-  get<T>(url: string, options: Options ) {
+  get<T>(url: string, options: Options) {
     return this.httpClient.get<T>(url, options) as Observable<T>;
   }
 }
