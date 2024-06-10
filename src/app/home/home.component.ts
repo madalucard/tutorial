@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ProductService } from '../services/product.service';
 import { Product, Products } from '../../types';
 import { ProductComponent } from '../components/product/product.component';
 import { CommonModule } from '@angular/common';
-import { PaginatorModule } from 'primeng/paginator';
+import { Paginator, PaginatorModule } from 'primeng/paginator';
 import { EditPopupComponent } from '../components/edit-popup/edit-popup.component';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-home',
@@ -17,10 +18,13 @@ import { EditPopupComponent } from '../components/edit-popup/edit-popup.componen
     PaginatorModule,
     EditPopupComponent,
     EditPopupComponent,
+    ButtonModule,
   ],
 })
 export class HomeComponent {
   constructor(private productService: ProductService) {}
+
+  @ViewChild('paginator') paginator: Paginator | undefined;
 
   products: Product[] = [];
 
@@ -84,6 +88,8 @@ export class HomeComponent {
       .subscribe({
         next: (data) => {
           console.log(data);
+          this.fetchProducts(0, this.rows);
+          this.resetPaginator();
         },
         error: (error) => {
           console.log(error);
@@ -98,6 +104,7 @@ export class HomeComponent {
         next: (data) => {
           console.log(data);
           this.fetchProducts(0, this.rows);
+          this.resetPaginator();
         },
         error: (error) => {
           console.log(error);
@@ -106,11 +113,35 @@ export class HomeComponent {
   }
 
   onConfirm(product: Product) {
-    this.editProduct(product, this.selectedProduct.id ?? 0);
+    if (!this.selectedProduct.id) {
+      return;
+    }
+    this.editProduct(product, this.selectedProduct.id);
     this.displayEditPopup = false;
   }
+
   onConfirmAdd(product: Product) {
     this.addProduct(product);
     this.displayAddPopup = false;
+  }
+
+  toggleEditPopup(product: Product) {
+    this.selectedProduct = product;
+    this.displayEditPopup = true;
+  }
+
+  toggleAddPopup() {
+    this.displayAddPopup = true;
+  }
+
+  toggleDeletePopup(product: Product) {
+    if (!product.id) {
+      return;
+    }
+    this.deleteProduct(product.id);
+  }
+
+  resetPaginator() {
+    this.paginator?.changePage(0);
   }
 }
