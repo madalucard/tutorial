@@ -4,20 +4,39 @@ import { Product, Products } from '../../types';
 import { ProductComponent } from '../components/product/product.component';
 import { CommonModule } from '@angular/common';
 import { PaginatorModule } from 'primeng/paginator';
+import { EditPopupComponent } from '../components/edit-popup/edit-popup.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ProductComponent, CommonModule, PaginatorModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
+  imports: [
+    ProductComponent,
+    CommonModule,
+    PaginatorModule,
+    EditPopupComponent,
+    EditPopupComponent,
+  ],
 })
 export class HomeComponent {
   constructor(private productService: ProductService) {}
 
   products: Product[] = [];
+
   totalRecords: number = 0;
   rows: number = 5;
+
+  displayEditPopup: boolean = false;
+  displayAddPopup: boolean = false;
+
+  selectedProduct: Product = {
+    id: 0,
+    name: '',
+    image: '',
+    price: '',
+    rating: 0,
+  };
 
   ngOnInit() {
     this.fetchProducts(0, this.rows);
@@ -71,6 +90,7 @@ export class HomeComponent {
         },
       });
   }
+
   addProduct(product: Product) {
     this.productService
       .addProduct(`http://localhost:3000/clothes/`, product)
@@ -83,5 +103,14 @@ export class HomeComponent {
           console.log(error);
         },
       });
+  }
+
+  onConfirm(product: Product) {
+    this.editProduct(product, this.selectedProduct.id ?? 0);
+    this.displayEditPopup = false;
+  }
+  onConfirmAdd(product: Product) {
+    this.addProduct(product);
+    this.displayAddPopup = false;
   }
 }
